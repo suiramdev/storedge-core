@@ -11,7 +11,7 @@ const context: ContextFunction<[StandaloneServerContextFunctionArgument], Contex
     req,
 }): Promise<Context> => ({
     prisma: new PrismaClient(),
-    token: req.headers.authorization,
+    token: req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization.substring(7) : undefined,
 });
 
 export default context;

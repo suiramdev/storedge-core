@@ -31,7 +31,6 @@ export const generateTokens = (sessionId: string): { accessToken: string; refres
 export const verifyToken = (token: string, type?: TokenType): JwtPayload => {
     const decoded = verify(token, env.JWT_SECRET) as JwtPayload | null;
     if (!decoded) throw InvalidTokenError;
-    if (!decoded.sessionId) throw InvalidTokenError;
 
     if (type && decoded.type !== type) {
         if (type === TokenType.ACCESS) throw InvalidAccessTokenError;
