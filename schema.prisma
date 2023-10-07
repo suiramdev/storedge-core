@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator typegraphql {
+  provider                  = "typegraphql-prisma"
+  formatGeneratedCode       = "prettier"
+  omitInputFieldsByDefault  = ["createdAt", "updatedAt"]
+  omitOutputFieldsByDefault = ["password"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  /// @TypeGraphQL.omit(input: ["create", "update"])
+  id         String   @id @default(uuid())
+  name       String   @unique
+  scopes     String[]
+  User       User[]
+  /// @TypeGraphQL.omit(input: true)
+  persistent Boolean  @default(false)
+}
+
+model User {
+  /// @TypeGraphQL.omit(input: ["create", "update"])
+  id         String  @id @default(uuid())
+  email      String  @unique
+  password   String
+  role       Role    @relation(fields: [roleId], references: [id])
+  /// @TypeGraphQL.omit(output: true)
+  roleId     String
+  /// @TypeGraphQL.omit(output: true, input: true)
+  sessionId  String  @unique @default(uuid())
+  /// @TypeGraphQL.omit(input: ["create", "update"])
+  persistent Boolean @default(false)
+}
+
+enum CurrencyCode {
+  EUR
+}
+
+model Shop {
+  /// @TypeGraphQL.omit(input: ["create", "update"])
+  id           String       @id @default(uuid())
+  name         String
+  currencyCode CurrencyCode
+  collections  Collection[]
+  products     Product[]
+}
+
+model Collection {
+  /// @TypeGraphQL.omit(input: ["create", "update"])
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  /// @TypeGraphQL.omit(output: true)
+  shopId      String?
+  shop        Shop?     @relation(fields: [shopId], references: [id])
+  products    Product[] @relation("CollectionToProduct")
+}
+
+enum ProductStatus {
+  Published
+  Draft
+}
+
+model Product {
+  /// @TypeGraphQL.omit(input: ["create", "update"])
+  id          String           @id @default(uuid())
+  name        String
+  description String?
+  status      ProductStatus
+  /// @TypeGraphQL.omit(output: true)
+  shopId      String
+  shop        Shop             @relation(fields: [shopId], references: [id])
+  images      ProductImage[]
+  options     ProductOption[]
+  variants    ProductVariant[]
+  collections Collection[]     @relation("CollectionToProduct")
+}
+
+model ProductImage {
+  /// @TypeGraphQL.omit(input: ["create", "update"])
+  id        String  @id @default(uuid())
+  src       String
+  /// @TypeGraphQL.omit(output: true)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model ProductVariant {
+  /// @TypeGraphQL.omit(input: ["create", "update"])
+  id          String               @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal
+  stock       Int
+  /// @TypeGraphQL.omit(output: true)
+  productId   String
+  values      ProductOptionValue[]
+  product     Product              @relation(fields: [productId], references: [id])
+}
+
+model ProductOption {
+  /// @TypeGraphQL.omit(input: ["create", "update"])
+  id        String               @id @default(uuid())
+  name      String
+  /// @TypeGraphQL.omit(output: true)
+  productId String
+  product   Product              @relation(fields: [productId], references: [id])
+  values    ProductOptionValue[]
+}
+
+model ProductOptionValue {
+  /// @TypeGraphQL.omit(input: ["create", "update"])
+  id        String         @id @default(uuid())
+  value     String
+  /// @TypeGraphQL.omit(output: true)
+  optionId  String
+  /// @TypeGraphQL.omit(output: true)
+  variantId String
+  option    ProductOption  @relation(fields: [optionId], references: [id])
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+}
