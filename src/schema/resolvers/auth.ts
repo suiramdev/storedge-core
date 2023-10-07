@@ -37,7 +37,6 @@ export class AuthResolver {
         return generateTokens(newSessionId);
     }
 
-    @Authorized()
     @Mutation(() => Auth)
     async refreshToken(@Arg("refreshToken") refreshToken: string, @Ctx() ctx: Context): Promise<Auth> {
         const decoded = verifyToken(refreshToken, TokenType.REFRESH);
