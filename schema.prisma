@@ -46,6 +46,7 @@ model Store {
   /// @TypeGraphQL.omit(input: ["create", "update"])
   id           String       @id @default(uuid())
   name         String
+  description  String?
   currencyCode CurrencyCode
   collections  Collection[]
   products     Product[]
