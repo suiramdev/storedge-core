@@ -42,7 +42,7 @@ enum CurrencyCode {
   EUR
 }
 
-model Shop {
+model Store {
   /// @TypeGraphQL.omit(input: ["create", "update"])
   id           String       @id @default(uuid())
   name         String
@@ -57,8 +57,8 @@ model Collection {
   name        String
   description String?
   /// @TypeGraphQL.omit(output: true)
-  shopId      String?
-  shop        Shop?     @relation(fields: [shopId], references: [id])
+  storeId     String?
+  store       Store?    @relation(fields: [storeId], references: [id])
   products    Product[] @relation("CollectionToProduct")
 }
 
@@ -74,8 +74,8 @@ model Product {
   description String?
   status      ProductStatus
   /// @TypeGraphQL.omit(output: true)
-  shopId      String
-  shop        Shop             @relation(fields: [shopId], references: [id])
+  storeId     String
+  store       Store            @relation(fields: [storeId], references: [id])
   images      ProductImage[]
   options     ProductOption[]
   variants    ProductVariant[]
