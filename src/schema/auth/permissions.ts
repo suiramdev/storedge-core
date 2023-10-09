@@ -2,9 +2,9 @@ import { type ResolversEnhanceMap, applyResolversEnhanceMap } from "@generated/t
 import { Authorized } from "type-graphql";
 
 export const enhanceMap: ResolversEnhanceMap = {
-    Shop: {
-        _query: [Authorized("read:shop")],
-        _mutation: [Authorized("create:shop", "update:shop", "delete:shop")],
+    Store: {
+        _query: [Authorized("read:store")],
+        _mutation: [Authorized("create:store", "update:store", "delete:store")],
     },
     Collection: {
         _query: [Authorized("read:collection")],
