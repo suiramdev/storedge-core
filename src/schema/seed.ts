@@ -10,7 +10,7 @@ const main = async (): Promise<void> => {
     });
     if (userFound) throw new Error("Default user already exist");
 
-    const models = ["shop", "collection", "product", "role", "user"];
+    const models = ["store", "collection", "product", "role", "user"];
 
     await prisma.user.create({
         data: {
