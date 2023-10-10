@@ -20,6 +20,10 @@ export const InvalidRefreshTokenError = new GraphQLError("Invalid refresh token"
     extensions: { code: "INVALID_REFRESH_TOKEN" },
 });
 
+export const ExpiredTokenError = new GraphQLError("Expired token", {
+    extensions: { code: "EXPIRED_TOKEN" },
+});
+
 export const UserNotFoundError = new GraphQLError("User not found", {
     extensions: { code: "USER_NOT_FOUND" },
 });
