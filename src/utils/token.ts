@@ -1,6 +1,11 @@
 import { sign, verify, type JwtPayload } from "jsonwebtoken";
 import env from "@/config/env";
-import { InvalidTokenError, InvalidAccessTokenError, InvalidRefreshTokenError } from "@/utils/errors";
+import {
+    InvalidTokenError,
+    InvalidAccessTokenError,
+    InvalidRefreshTokenError,
+    ExpiredTokenError,
+} from "@/utils/errors";
 
 export enum TokenType {
     ACCESS = "access",
@@ -29,13 +34,19 @@ export const generateTokens = (sessionId: string): { accessToken: string; refres
 };
 
 export const verifyToken = (token: string, type?: TokenType): JwtPayload => {
-    const decoded = verify(token, env.JWT_SECRET) as JwtPayload | null;
-    if (!decoded) throw InvalidTokenError;
+    try {
+        const decoded = verify(token, env.JWT_SECRET) as JwtPayload | null;
+        if (!decoded) throw InvalidTokenError;
 
-    if (type && decoded.type !== type) {
-        if (type === TokenType.ACCESS) throw InvalidAccessTokenError;
-        throw InvalidRefreshTokenError;
+        if (type && decoded.type !== type) {
+            if (type === TokenType.ACCESS) throw InvalidAccessTokenError;
+            throw InvalidRefreshTokenError;
+        }
+
+        return decoded;
+    } catch (error) {
+        if ((error as Error).name === "TokenExpiredError") throw ExpiredTokenError;
+
+        throw error;
     }
-
-    return decoded;
 };
