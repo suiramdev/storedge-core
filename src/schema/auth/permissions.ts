@@ -18,14 +18,6 @@ export const enhanceMap: ResolversEnhanceMap = {
         _query: [Authorized("read:product")],
         _mutation: [Authorized("create:product", "update:product", "delete:product")],
     },
-    ProductOption: {
-        _query: [Authorized("read:product")],
-        _mutation: [Authorized("create:product", "update:product", "delete:product")],
-    },
-    ProductOptionValue: {
-        _query: [Authorized("read:product")],
-        _mutation: [Authorized("create:product", "update:product", "delete:product")],
-    },
     ProductImage: {
         _query: [Authorized("read:product")],
         _mutation: [Authorized("create:product", "update:product", "delete:product")],
