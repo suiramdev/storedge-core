@@ -73,12 +73,12 @@ model Product {
   id          String           @id @default(uuid())
   name        String
   description String?
+  price       Decimal          @db.Money
   status      ProductStatus
   /// @TypeGraphQL.omit(output: true)
   storeId     String
   store       Store            @relation(fields: [storeId], references: [id])
   images      ProductImage[]
-  options     ProductOption[]
   variants    ProductVariant[]
   collections Collection[]     @relation("CollectionToProduct")
 }
@@ -95,33 +95,12 @@ model ProductImage {
 
 model ProductVariant {
   /// @TypeGraphQL.omit(input: ["create", "update"])
-  id          String               @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
-  price       Decimal
+  price       Decimal @db.Money
   stock       Int
-  values      ProductOptionValue[]
   /// @TypeGraphQL.omit(output: true)
   productId   String
-  product     Product              @relation(fields: [productId], references: [id])
-}
-
-model ProductOption {
-  /// @TypeGraphQL.omit(input: ["create", "update"])
-  id        String               @id @default(uuid())
-  name      String
-  values    ProductOptionValue[]
-  /// @TypeGraphQL.omit(output: true)
-  productId String
-  product   Product              @relation(fields: [productId], references: [id])
-}
-
-model ProductOptionValue {
-  /// @TypeGraphQL.omit(input: ["create", "update"])
-  id       String           @id @default(uuid())
-  value    String
-  variants ProductVariant[]
-  /// @TypeGraphQL.omit(output: true)
-  optionId String
-  option   ProductOption    @relation(fields: [optionId], references: [id])
+  product     Product @relation(fields: [productId], references: [id])
 }
