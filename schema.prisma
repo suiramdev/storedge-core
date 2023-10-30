@@ -74,6 +74,7 @@ model Product {
   name        String
   description String?
   price       Decimal          @db.Money
+  stock       Int
   status      ProductStatus
   /// @TypeGraphQL.omit(output: true)
   storeId     String
