@@ -1,4 +1,5 @@
-import { sign, verify, type JwtPayload } from "jsonwebtoken-esm";
+import jwt, { type JwtPayload } from "jsonwebtoken";
+const { sign, verify } = jwt;
 import env from "@/config/env";
 import {
     InvalidTokenError,
