@@ -5,7 +5,7 @@ import schema from "@/schema";
 import context, { type Context } from "@/context";
 import env from "@/config/env";
 
-const server = new ApolloServer<Context>({ schema });
+export const server = new ApolloServer<Context>({ schema });
 
 startStandaloneServer(server, {
     context,

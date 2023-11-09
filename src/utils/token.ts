@@ -1,4 +1,4 @@
-import { sign, verify, type JwtPayload } from "jsonwebtoken";
+import * as jwt from "jsonwebtoken";
 import env from "@/config/env";
 import {
     InvalidTokenError,
@@ -14,7 +14,7 @@ export enum TokenType {
 
 export const generateTokens = (sessionId: string): { accessToken: string; refreshToken: string } => {
     return {
-        accessToken: sign(
+        accessToken: jwt.sign(
             {
                 sessionId,
                 type: TokenType.ACCESS,
@@ -22,7 +22,7 @@ export const generateTokens = (sessionId: string): { accessToken: string; refres
             env.JWT_SECRET,
             { expiresIn: "15m" },
         ),
-        refreshToken: sign(
+        refreshToken: jwt.sign(
             {
                 sessionId,
                 type: TokenType.REFRESH,
@@ -33,9 +33,9 @@ export const generateTokens = (sessionId: string): { accessToken: string; refres
     };
 };
 
-export const verifyToken = (token: string, type?: TokenType): JwtPayload => {
+export const verifyToken = (token: string, type?: TokenType): jwt.JwtPayload => {
     try {
-        const decoded = verify(token, env.JWT_SECRET) as JwtPayload | null;
+        const decoded = jwt.verify(token, env.JWT_SECRET) as jwt.JwtPayload | null;
         if (!decoded) throw InvalidTokenError;
 
         if (type && decoded.type !== type) {

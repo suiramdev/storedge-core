@@ -1,6 +1,6 @@
 import { Resolver, FieldResolver, Root, Ctx } from "type-graphql";
 import { Product } from "@generated/type-graphql";
-import { Context } from "@/context";
+import { type Context } from "@/context.js";
 
 @Resolver(() => Product)
 export class ProductResolver {
