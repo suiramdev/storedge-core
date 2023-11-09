@@ -28,22 +28,20 @@ export class FileResolver {
     ): Promise<File> {
         if ((await ctx.prisma.store.findUnique({ where: { id: storeId } })) === null) throw NotFoundError;
 
-        const { createReadStream, mimetype, encoding } = await file.promise;
-
-        const stream = createReadStream();
+        const fileUpload = await file.promise;
 
         const command = new PutObjectCommand({
             Bucket: env.S3_BUCKET_NAME,
             Key: `${storeId}/${uuid()}`,
-            Body: stream,
-            ContentEncoding: encoding,
-            ContentType: mimetype,
+            Body: fileUpload.createReadStream(),
+            ContentEncoding: fileUpload.encoding,
+            ContentType: fileUpload.mimetype,
         });
         await ctx.s3.send(command);
 
         return {
-            mimetype,
-            encoding,
+            mimetype: fileUpload.mimetype,
+            encoding: fileUpload.encoding,
             url: `https://${env.S3_BUCKET_NAME}.s3.${env.S3_REGION}.amazonaws.com/${storeId}/${command.input.Key}`,
         };
     }
