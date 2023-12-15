@@ -87,11 +87,15 @@ model Product {
 model ProductImage {
   /// @TypeGraphQL.omit(input: ["create", "update"])
   id        String  @id @default(uuid())
-  src       String
+  fileId    String
+  file      File    @relation(fields: [fileId], references: [id])
   alt       String?
+  position  Int
   /// @TypeGraphQL.omit(output: true)
   productId String
   product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([productId, position])
 }
 
 model ProductVariant {
@@ -104,4 +108,14 @@ model ProductVariant {
   /// @TypeGraphQL.omit(output: true)
   productId   String
   product     Product @relation(fields: [productId], references: [id])
+}
+
+model File {
+  id          String         @id @default(uuid())
+  bucket      String
+  key         String
+  contentType String
+  images      ProductImage[]
+
+  @@unique(name: "src", [bucket, key])
 }

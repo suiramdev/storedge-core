@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { S3Client, CreateBucketCommand, PutPublicAccessBlockCommand, PutBucketAclCommand } from "@aws-sdk/client-s3";
+import { S3Client, CreateBucketCommand } from "@aws-sdk/client-s3";
 import { hash } from "bcrypt";
 import env from "@/config/env";
 
@@ -14,6 +14,7 @@ const s3 = new S3Client({
 });
 
 const main = async (): Promise<void> => {
+    console.log("Creating default admin user");
     const userFound = await prisma.user.findUnique({
         where: { email: env.DEFAULT_ADMIN_EMAIL },
     });
@@ -44,36 +45,23 @@ const main = async (): Promise<void> => {
                 },
             },
         });
+    } else {
+        console.log("Default admin user already exists");
     }
 
-    await s3.send(
-        new CreateBucketCommand({
-            Bucket: env.S3_BUCKET_NAME,
-            CreateBucketConfiguration: {
-                LocationConstraint: env.S3_REGION,
-            },
-            ObjectOwnership: "BucketOwnerPreferred",
-        }),
-    );
-
-    await s3.send(
-        new PutPublicAccessBlockCommand({
-            Bucket: env.S3_BUCKET_NAME,
-            PublicAccessBlockConfiguration: {
-                BlockPublicAcls: false,
-                BlockPublicPolicy: false,
-                IgnorePublicAcls: false,
-                RestrictPublicBuckets: false,
-            },
-        }),
-    );
-
-    await s3.send(
-        new PutBucketAclCommand({
-            Bucket: env.S3_BUCKET_NAME,
-            ACL: "public-read",
-        }),
-    );
+    try {
+        console.log("Creating bucket");
+        await s3.send(
+            new CreateBucketCommand({
+                Bucket: env.S3_BUCKET_NAME,
+                CreateBucketConfiguration: {
+                    LocationConstraint: env.S3_REGION,
+                },
+            }),
+        );
+    } catch (error) {
+        console.log("Bucket already exists");
+    }
 };
 
 main().finally(() => prisma.$disconnect());

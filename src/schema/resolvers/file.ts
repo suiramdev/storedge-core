@@ -1,48 +1,83 @@
-import { ObjectType, Field, Resolver, Arg, Mutation, Ctx, Authorized } from "type-graphql";
-import GraphQLUpload from "graphql-upload/GraphQLUpload.mjs";
-import Upload from "graphql-upload/Upload.mjs";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { ObjectType, Field, Resolver, Arg, Mutation, Ctx, Authorized, FieldResolver, Root } from "type-graphql";
+import { File } from "@generated/type-graphql";
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuid } from "uuid";
 import { NotFoundError } from "@/utils/errors";
 import { type Context } from "@/context";
 import env from "@/config/env";
 
 @ObjectType()
-class File {
+class StagedFile {
     @Field()
-    mimetype!: string;
+    uploadUrl!: string;
     @Field()
-    encoding!: string;
+    bucket!: string;
     @Field()
-    url!: string;
+    key!: string;
+    @Field()
+    contentType!: string;
 }
 
 @Resolver(() => File)
 export class FileResolver {
     @Authorized()
-    @Mutation(() => File)
-    async uploadOneFile(
-        @Arg("file", () => GraphQLUpload) file: Upload,
-        @Arg("storeId", () => String) storeId: string,
+    @Mutation(() => StagedFile)
+    async stageOneFile(
+        @Arg("mimeType") mimeType: string,
+        @Arg("storeId") storeId: string,
         @Ctx() ctx: Context,
-    ): Promise<File> {
+    ): Promise<StagedFile> {
         if ((await ctx.prisma.store.findUnique({ where: { id: storeId } })) === null) throw NotFoundError;
-
-        const fileUpload = await file.promise;
 
         const command = new PutObjectCommand({
             Bucket: env.S3_BUCKET_NAME,
             Key: `${storeId}/${uuid()}`,
-            Body: fileUpload.createReadStream(),
-            ContentEncoding: fileUpload.encoding,
-            ContentType: fileUpload.mimetype,
+            ContentType: mimeType,
         });
-        await ctx.s3.send(command);
 
         return {
-            mimetype: fileUpload.mimetype,
-            encoding: fileUpload.encoding,
-            url: `https://${env.S3_BUCKET_NAME}.s3.${env.S3_REGION}.amazonaws.com/${storeId}/${command.input.Key}`,
+            uploadUrl: await getSignedUrl(ctx.s3, command, { expiresIn: 3600 }),
+            bucket: env.S3_BUCKET_NAME,
+            key: command.input.Key!,
+            contentType: mimeType,
         };
+    }
+
+    @Authorized()
+    @Mutation(() => [StagedFile])
+    async stageManyFile(
+        @Arg("mimeTypes", () => [String]) mimeTypes: string[],
+        @Arg("storeId") storeId: string,
+        @Ctx() ctx: Context,
+    ): Promise<StagedFile[]> {
+        if ((await ctx.prisma.store.findUnique({ where: { id: storeId } })) === null) throw NotFoundError;
+
+        return Promise.all(
+            mimeTypes.map(async (mimeType) => {
+                const command = new PutObjectCommand({
+                    Bucket: env.S3_BUCKET_NAME,
+                    Key: `${storeId}/${uuid()}`,
+                    ContentType: mimeType,
+                });
+
+                return {
+                    uploadUrl: await getSignedUrl(ctx.s3, command, { expiresIn: 3600 }),
+                    bucket: env.S3_BUCKET_NAME,
+                    key: command.input.Key!,
+                    contentType: mimeType,
+                };
+            }),
+        );
+    }
+
+    @FieldResolver(() => String)
+    async url(@Root() file: File, @Ctx() ctx: Context): Promise<string> {
+        const command = new GetObjectCommand({
+            Bucket: file.bucket,
+            Key: file.key,
+        });
+
+        return await getSignedUrl(ctx.s3, command, { expiresIn: 3600 });
     }
 }

@@ -5,14 +5,15 @@
         "build": "swc src -d dist",
         "start": "node --experimental-specifier-resolution=node --inspect dist/index.js",
         "dev": "nodemon --ext ts --exec \"pnpm run build && NODE_ENV=development && pnpm run start\"",
-        "seed": "pnpm run build && node dist/schema/seed.js"
+        "seed": "pnpm run build && node --experimental-specifier-resolution=node dist/schema/seed.js"
     },
     "prisma": {
-        "seed": "pnpm run build && node dist/schema/seed.js"
+        "seed": "pnpm run build && node --experimental-specifier-resolution=node dist/schema/seed.js"
     },
     "dependencies": {
         "@apollo/server": "^4.9.3",
         "@aws-sdk/client-s3": "^3.438.0",
+        "@aws-sdk/s3-request-presigner": "^3.449.0",
         "@prisma/client": "^4.15.0",
         "@types/graphql-upload": "^16.0.4",
         "@types/jsonwebtoken": "^9.0.5",
