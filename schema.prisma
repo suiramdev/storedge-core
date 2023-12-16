@@ -86,16 +86,14 @@ model Product {
 
 model ProductImage {
   /// @TypeGraphQL.omit(input: ["create", "update"])
-  id        String  @id @default(uuid())
-  fileId    String
-  file      File    @relation(fields: [fileId], references: [id])
-  alt       String?
-  position  Int
+  id         String  @id @default(uuid())
+  fileId     String
+  file       File    @relation(fields: [fileId], references: [id])
+  alt        String?
+  orderIndex Int
   /// @TypeGraphQL.omit(output: true)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-
-  @@unique([productId, position])
+  productId  String
+  product    Product @relation(fields: [productId], references: [id])
 }
 
 model ProductVariant {
