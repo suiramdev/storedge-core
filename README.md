@@ -9,6 +9,21 @@ The backbone of Storedge, an innovative headless Content Management System (CMS)
 - **Modularity**: Our API's modular design allows for easy customization and extension.
 - **Self-hosted & Open-source**: Keep full control of your data with self-hosting and enjoy the flexibility of open-source for customization.
 
+
+## Table of Contents
+
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Initializing the Database](#initializing-the-database)
+  - [Building the Application](#building-the-application)
+  - [Running the Server](#running-the-server)
+- [Architecture Overview](#architecture-overview)
+  - [File Handling](#file-handling)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Getting Started
 
 Clone the `storedge-core` repository to begin:
