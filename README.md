@@ -95,14 +95,14 @@ Storedge's architecture is divided into core and apps layers:
 - **Core**: Houses the database, services, and gateway, orchestrating the business logic and data persistence.
 - **Apps**: This layer contains the storefront and dashboard interfaces. (e.g, <https://github.com/suiramdev/storedge-dashboard>)
 
-![Architecture overview schema](https://i.imgur.com/EVUxTUt.png)
+![Architecture overview schema](https://i.imgur.com/DtJWNji.png)
 
 ### File Handling
 
 - **File Downloading**: To securely download files, clients request a presigned URL from the gateway, granting access to the object storage.
 - **File Uploading**: For uploads, clients use a presigned URL to send files directly to object storage, enhancing security and performance.
 
-![File handling schema](https://i.imgur.com/XSkmu4O.png)
+![File handling schema](https://i.imgur.com/Z8cdLgo.png)
 
 ## Contributing
 
