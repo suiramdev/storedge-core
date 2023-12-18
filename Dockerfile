@@ -4,14 +4,14 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --only=production
+RUN npm install --omit=dev
 
 COPY . .
 
-RUN npm build
+RUN npm run build
 
 RUN npx prisma db push
 
 RUN npx prisma db seed
 
-RUN npm start
+RUN npm run start
