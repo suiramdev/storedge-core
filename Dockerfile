@@ -10,8 +10,8 @@ COPY . .
 
 RUN npm run build
 
-RUN npx prisma db push
+RUN npx prisma db generate
 
-RUN npx prisma db seed
+EXPOSE 3000
 
-RUN npm run start
+CMD ["npm", "run", "start"]
