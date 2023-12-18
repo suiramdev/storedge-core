@@ -4,11 +4,10 @@
     "scripts": {
         "build": "swc src -d dist",
         "start": "node --experimental-specifier-resolution=node --inspect dist/index.js",
-        "dev": "nodemon --ext ts --exec \"pnpm run build && NODE_ENV=development && pnpm run start\"",
-        "seed": "pnpm run build && node --experimental-specifier-resolution=node dist/schema/seed.js"
+        "dev": "nodemon --ext ts --exec \"pnpm run build && NODE_ENV=development && pnpm run start\""
     },
     "prisma": {
-        "seed": "pnpm run build && node --experimental-specifier-resolution=node dist/schema/seed.js"
+        "seed": "node --experimental-specifier-resolution=node dist/schema/seed.js"
     },
     "dependencies": {
         "@apollo/server": "^4.9.3",
