@@ -1,4 +1,5 @@
 version: "3.9"
+
 services:
     postgres:
         image: postgres:latest
@@ -8,28 +9,12 @@ services:
         volumes:
             - pg_data:/var/lib/postgresql/data
 
-    postgres-init:
-        build:
-            context: .
-        command: npx prisma db push
+    storedge-core:
+        container_name: storedge-core
+        image: ghcr.io/suiramdev/storedge-core:main
         env_file: .env
         depends_on:
             - postgres
-
-    postgres-seeding:
-        build:
-            context: .
-        command: npx prisma db seed
-        env_file: .env
-        depends_on:
-            - postgres-init
-
-    storedge-core:
-        build:
-            context: .
-        env_file: .env
-        depends_on:
-            - postgres-seeding
         ports:
             - "4000:4000"
 
