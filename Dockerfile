@@ -10,7 +10,7 @@ FROM node:16-slim
 WORKDIR /usr/src/app
 RUN apt-get update -y && apt-get install -y openssl
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
-COPY --chown=node:node --from=build /usr/src/app/.env .env
+# COPY --chown=node:node --from=build /usr/src/app/.env .env
 COPY --chown=node:node --from=build /usr/src/app/package.json .
 COPY --chown=node:node --from=build /usr/src/app/package-lock.json .
 RUN npm install --omit=dev
