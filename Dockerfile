@@ -10,6 +10,8 @@ COPY . .
 
 RUN npm run build
 
+RUN apt-get update -y && apt-get install -y openssl
+
 RUN npx prisma generate
 
 EXPOSE 3000
