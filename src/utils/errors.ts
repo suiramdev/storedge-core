@@ -31,3 +31,7 @@ export const UserNotFoundError = new GraphQLError("User not found", {
 export const WrongPasswordError = new GraphQLError("Wrong password", {
     extensions: { code: "WRONG_PASSWORD" },
 });
+
+export const NotFoundError = new GraphQLError("Not found", {
+    extensions: { code: "NOT_FOUND" },
+});

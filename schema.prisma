@@ -73,56 +73,47 @@ model Product {
   id          String           @id @default(uuid())
   name        String
   description String?
+  price       Decimal          @db.Money
+  stock       Int
   status      ProductStatus
   /// @TypeGraphQL.omit(output: true)
   storeId     String
   store       Store            @relation(fields: [storeId], references: [id])
   images      ProductImage[]
-  options     ProductOption[]
   variants    ProductVariant[]
   collections Collection[]     @relation("CollectionToProduct")
 }
 
 model ProductImage {
   /// @TypeGraphQL.omit(input: ["create", "update"])
-  id        String  @id @default(uuid())
-  src       String
+  id         String  @id @default(uuid())
+  fileId     String
+  file       File    @relation(fields: [fileId], references: [id])
+  alt        String?
+  orderIndex Int
   /// @TypeGraphQL.omit(output: true)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
+  productId  String
+  product    Product @relation(fields: [productId], references: [id])
 }
 
 model ProductVariant {
   /// @TypeGraphQL.omit(input: ["create", "update"])
-  id          String               @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
-  price       Decimal
+  price       Decimal @db.Money
   stock       Int
   /// @TypeGraphQL.omit(output: true)
   productId   String
-  values      ProductOptionValue[]
-  product     Product              @relation(fields: [productId], references: [id])
+  product     Product @relation(fields: [productId], references: [id])
 }
 
-model ProductOption {
-  /// @TypeGraphQL.omit(input: ["create", "update"])
-  id        String               @id @default(uuid())
-  name      String
-  /// @TypeGraphQL.omit(output: true)
-  productId String
-  product   Product              @relation(fields: [productId], references: [id])
-  values    ProductOptionValue[]
-}
+model File {
+  id          String         @id @default(uuid())
+  bucket      String
+  key         String
+  contentType String
+  images      ProductImage[]
 
-model ProductOptionValue {
-  /// @TypeGraphQL.omit(input: ["create", "update"])
-  id        String         @id @default(uuid())
-  value     String
-  /// @TypeGraphQL.omit(output: true)
-  optionId  String
-  /// @TypeGraphQL.omit(output: true)
-  variantId String
-  option    ProductOption  @relation(fields: [optionId], references: [id])
-  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  @@unique(name: "src", [bucket, key])
 }

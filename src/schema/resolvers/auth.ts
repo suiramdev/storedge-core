@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { User } from "@generated/type-graphql";
 import { ObjectType, Field, Resolver, Mutation, Arg, Ctx, Authorized, Query } from "type-graphql";
 import { compareSync } from "bcrypt";
-import { Context } from "@/context";
+import { type Context } from "@/context";
 import { TokenType, generateTokens, verifyToken } from "@/utils/token";
 import { InvalidRefreshTokenError, UnauthenticatedError, UserNotFoundError, WrongPasswordError } from "@/utils/errors";
 
