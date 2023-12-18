@@ -10,7 +10,7 @@ COPY . .
 
 RUN npm run build
 
-RUN npx prisma db generate
+RUN npx prisma generate
 
 EXPOSE 3000
 
