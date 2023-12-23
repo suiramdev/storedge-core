@@ -28,6 +28,7 @@ model User {
   /// @TypeGraphQL.omit(input: ["create", "update"])
   id         String  @id @default(uuid())
   email      String  @unique
+  /// @TypeGraphQL.omit(output: true, input: ["where", "orderBy"])
   password   String
   role       Role    @relation(fields: [roleId], references: [id])
   /// @TypeGraphQL.omit(output: true)

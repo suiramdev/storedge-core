@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { User } from "@generated/type-graphql";
 import { ObjectType, Field, Resolver, Mutation, Arg, Ctx, Authorized, Query } from "type-graphql";
-import { compareSync } from "bcrypt";
+import bcrypt from "bcrypt";
 import { type Context } from "@/context";
 import { TokenType, generateTokens, verifyToken } from "@/utils/token";
 import { InvalidRefreshTokenError, UnauthenticatedError, UserNotFoundError, WrongPasswordError } from "@/utils/errors";
@@ -25,7 +25,7 @@ export class AuthResolver {
     ): Promise<Auth> {
         const user = await ctx.prisma.user.findUnique({ where: { email } });
         if (!user) throw UserNotFoundError;
-        if (!compareSync(password, user.password)) throw WrongPasswordError;
+        if (!(await bcrypt.compare(password, user.password))) throw WrongPasswordError;
 
         const newSessionId = randomUUID();
 
