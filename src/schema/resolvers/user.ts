@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Ctx, Arg } from "type-graphql";
+import { Resolver, Authorized, Mutation, Ctx, Arg } from "type-graphql";
 import {
     User,
     UserCreateInput,
@@ -15,6 +15,7 @@ import bcrypt from "bcrypt";
 
 @Resolver(() => User)
 export class UserResolver {
+    @Authorized()
     @Mutation(() => User, { nullable: true })
     async createOneUser(@Ctx() ctx: Context, @Arg("data") data: UserCreateInput): Promise<User | null> {
         return ctx.prisma.user.create({
@@ -25,11 +26,13 @@ export class UserResolver {
         });
     }
 
+    @Authorized()
     @Mutation(() => AffectedRowsOutput)
     async createManyUser(@Ctx() ctx: Context, @Arg("data") data: UserCreateManyInput): Promise<AffectedRowsOutput> {
         return ctx.prisma.user.createMany({ data: { ...data, password: await bcrypt.hash(data.password, 10) } });
     }
 
+    @Authorized()
     @Mutation(() => User, { nullable: true })
     async updateOneUser(
         @Ctx() ctx: Context,
@@ -49,6 +52,7 @@ export class UserResolver {
         });
     }
 
+    @Authorized()
     @Mutation(() => AffectedRowsOutput)
     async updateManyUser(
         @Ctx() ctx: Context,
@@ -64,6 +68,7 @@ export class UserResolver {
         });
     }
 
+    @Authorized()
     @Mutation(() => User, { nullable: true })
     async upsertOneUser(
         @Ctx() ctx: Context,
@@ -87,6 +92,7 @@ export class UserResolver {
         });
     }
 
+    @Authorized()
     @Mutation(() => User, { nullable: true })
     async deleteOneUser(@Ctx() ctx: Context, @Arg("where") where: UserWhereUniqueInput): Promise<User | null> {
         const user = await ctx.prisma.user.findUnique({ where });
@@ -96,6 +102,7 @@ export class UserResolver {
         return ctx.prisma.user.delete({ where });
     }
 
+    @Authorized()
     @Mutation(() => AffectedRowsOutput)
     async deleteManyUser(@Ctx() ctx: Context, @Arg("where") where: UserWhereInput): Promise<AffectedRowsOutput> {
         return ctx.prisma.user.deleteMany({ where: { ...where, persistent: false } });
