@@ -18,7 +18,7 @@ model Role {
   /// @TypeGraphQL.omit(input: ["create", "update"])
   id         String   @id @default(uuid())
   name       String   @unique
-  scopes     String[]
+  scopes     String[] @default([])
   User       User[]
   /// @TypeGraphQL.omit(input: true)
   persistent Boolean  @default(false)
