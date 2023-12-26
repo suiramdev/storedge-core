@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { S3Client, CreateBucketCommand } from "@aws-sdk/client-s3";
-import { hash } from "bcrypt";
+import bcrypt from "bcrypt";
 import env from "@/config/env";
 
 const prisma = new PrismaClient();
@@ -24,7 +24,7 @@ const main = async (): Promise<void> => {
         await prisma.user.create({
             data: {
                 email: env.DEFAULT_ADMIN_EMAIL,
-                password: await hash(env.DEFAULT_ADMIN_PASSWORD, env.SALT_ROUNDS),
+                password: await bcrypt.hash(env.DEFAULT_ADMIN_PASSWORD, env.SALT_ROUNDS),
                 persistent: true,
                 role: {
                     connectOrCreate: {
@@ -35,7 +35,7 @@ const main = async (): Promise<void> => {
                             name: "ADMIN",
                             scopes: [
                                 ...models.map((model) => `create:${model}`),
-                                ...models.map((model) => `read:${model}`),
+                                // ...models.map((model) => `read:${model}`),
                                 ...models.map((model) => `update:${model}`),
                                 ...models.map((model) => `delete:${model}`),
                             ],
