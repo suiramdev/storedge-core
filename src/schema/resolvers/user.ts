@@ -86,7 +86,7 @@ export class UserResolver {
             where,
             create: {
                 ...create,
-                password: await bcrypt.hash(create.password, 10),
+                password: await bcrypt.hash(create.password, env.SALT_ROUNDS),
             },
             update: {
                 ...update,
