@@ -12,6 +12,7 @@ import {
 import { UnauthorizedError } from "@/utils/errors";
 import { type Context } from "@/context";
 import bcrypt from "bcrypt";
+import env from "@/config/env";
 
 @Resolver(() => User)
 export class UserResolver {
@@ -21,7 +22,7 @@ export class UserResolver {
         return ctx.prisma.user.create({
             data: {
                 ...data,
-                password: await bcrypt.hash(data.password, 10),
+                password: await bcrypt.hash(data.password, env.SALT_ROUNDS),
             },
         });
     }
@@ -29,7 +30,9 @@ export class UserResolver {
     @Authorized()
     @Mutation(() => AffectedRowsOutput)
     async createManyUser(@Ctx() ctx: Context, @Arg("data") data: UserCreateManyInput): Promise<AffectedRowsOutput> {
-        return ctx.prisma.user.createMany({ data: { ...data, password: await bcrypt.hash(data.password, 10) } });
+        return ctx.prisma.user.createMany({
+            data: { ...data, password: await bcrypt.hash(data.password, env.SALT_ROUNDS) },
+        });
     }
 
     @Authorized()
@@ -47,7 +50,7 @@ export class UserResolver {
             where,
             data: {
                 ...data,
-                password: data.password?.set && { set: await bcrypt.hash(data.password.set, 10) },
+                password: data.password?.set && { set: await bcrypt.hash(data.password.set, env.SALT_ROUNDS) },
             },
         });
     }
@@ -63,7 +66,7 @@ export class UserResolver {
             where: { ...where, persistent: false },
             data: {
                 ...data,
-                password: data.password?.set && { set: await bcrypt.hash(data.password.set, 10) },
+                password: data.password?.set && { set: await bcrypt.hash(data.password.set, env.SALT_ROUNDS) },
             },
         });
     }
@@ -87,7 +90,7 @@ export class UserResolver {
             },
             update: {
                 ...update,
-                password: update.password?.set && { set: await bcrypt.hash(update.password.set, 10) },
+                password: update.password?.set && { set: await bcrypt.hash(update.password.set, env.SALT_ROUNDS) },
             },
         });
     }
