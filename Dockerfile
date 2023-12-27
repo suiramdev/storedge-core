@@ -1,12 +1,12 @@
 FROM node:16.20.2-slim AS base
 WORKDIR /app
+RUN apt-get update -y && apt-get install -y openssl
 # Faster dependency install with pnpm
 RUN npm install -g pnpm
 COPY . .
 
 FROM base AS build
 RUN pnpm install
-RUN apt-get update -y && apt-get install -y openssl
 # Can't use pnpm dlx becuase it doesn't support typegraphql-prisma for some reason
 RUN pnpm run db:generate
 RUN pnpm run build
