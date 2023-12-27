@@ -14,7 +14,7 @@ RUN pnpm run build
 FROM base
 WORKDIR /app
 RUN pnpm install --prod
-COPY --from=build /app/node_modules/@generated ./node_modules/@generated/type-graphql
+COPY --from=build /app/node_modules/@generated ./node_modules/@generated
 COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=build /app/schema.prisma ./schema.prisma
 COPY --from=build /app/dist ./dist
